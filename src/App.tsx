@@ -1,26 +1,55 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { createContext, useState } from "react";
+import { Header } from "./components/header";
+import { GlobalStyle } from "./styles/global-style";
+import { Language } from "./translation/translation";
+import { ThemeConfig, darkTheme, lightTheme } from "./theme/theme";
+import { ThemeProvider } from "styled-components";
+
+interface LanguageContextInterface {
+  language: string;
+  changeLanguage?: () => void;
+}
+
+export const LanguageContext = createContext<LanguageContextInterface>({
+  language: Language.RU,
+});
+
+export interface ThemeInterface {
+  defaultTheme: ThemeConfig;
+  changeTheme?: () => void;
+}
+
+export const ThemeContext = createContext<ThemeInterface>({
+  defaultTheme: darkTheme,
+});
 
 function App() {
+  const [language, setLanguage] = useState<string>(Language.RU);
+  const [defaultTheme, setDefaultTheme] = useState(darkTheme);
+
+  const changeTheme = () => {
+    defaultTheme === darkTheme
+      ? setDefaultTheme(lightTheme)
+      : setDefaultTheme(darkTheme);
+  };
+
+  const changeLanguage = () => {
+    language === Language.RU
+      ? setLanguage(Language.EN)
+      : setLanguage(Language.RU);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <LanguageContext.Provider value={{ language, changeLanguage }}>
+        <ThemeContext.Provider value={{ defaultTheme, changeTheme }}>
+          <ThemeProvider theme={defaultTheme}>
+            <GlobalStyle />
+            <Header />
+          </ThemeProvider>
+        </ThemeContext.Provider>
+      </LanguageContext.Provider>
     </div>
   );
 }
-
 export default App;
